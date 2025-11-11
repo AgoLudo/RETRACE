@@ -9,8 +9,8 @@ from funct_var_analysis_main import (
     simulation_uncertainty,FPCA_regression_main,
     event_mass_analysis)
 
-station_couple={'upstream'  :'Arval_Amont',
-                'downstream':'Arvan_Aval'}
+station_couple={'upstream'  :'Pontamafrey',
+                'downstream':'Aiguebelle'}
 
 # reaches=['Arval_Amont:Arval_Amont','Arval_Amont:Arvan_Aval','Arvan_Aval:Pontamafrey',
 #              'Pontamafrey:Aiguebelle','Aiguebelle:Montmelian','Montmelian:Grenoble_campus']
@@ -49,7 +49,7 @@ timescale_dict={
 
 # EMD EVENT SEGMENTATION - event segmentation
 event_param_dict={
-    'dist_timeSteps':7, # max number of time steps to consider for event ending or init
+    'dist_timeSteps': 7, # max number of time steps to consider for event ending or init
     'quantile': 0.75 , # statistical quantile for flood definition
     'minimum_quantile': 0.75, # second filtering: event higher than 'time_span'
     'time_span': 'ME', # second filtering: 'time_span' for quantile
@@ -129,7 +129,7 @@ input_dict_ssc_1h={
     'head':0,
     'sep':' ',
     'dt_sec':3600,
-    'window_size':2, # minimla smoothing
+    'window_size':2, # minimal smoothing
     'polyorder':1}
 
 input_dict_ssc_10m={

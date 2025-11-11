@@ -392,14 +392,12 @@ def prepare_data_FPCA(df_sim,
     df2save=df2_FPCA.copy()
 
     # ---------------- iterate and prepare variable-----------
-    for variable in df2_FPCA.columns:
-        # normalize input variables 
-        min_val = df2_FPCA[variable].min()
-        max_val = df2_FPCA[variable].max()
+    for variable in df2_FPCA.columns:  
+        if variable!='target':      
+            median_val=df2_FPCA[variable].median()
+            iqr_val=(df2_FPCA[variable].quantile(0.75) - df2_FPCA[variable].quantile(0.25))
+            df2_FPCA[variable] =(df2_FPCA[variable] - median_val )/iqr_val
 
-        df2_FPCA[variable] = (2 * (
-            df2_FPCA[variable] - min_val) / (max_val - min_val)) - 1
-        
         # smooth normalized variables for FPCA 
         df2_FPCA[variable] = smooth_with_savgol_filter(
             df2_FPCA[variable].values, window_length, polyorder)
@@ -504,32 +502,37 @@ def FPCA_regression(sim_dict,
         
         # --------------------- Verify Orthogonality of FPCs ---------------------
         # normalize
-        X_flat = FPCA_components.squeeze()  
-        X_flat_normalized = X_flat / np.linalg.norm(X_flat, axis=1, keepdims=True)     
-        orthogonality_matrix = np.dot(X_flat_normalized, X_flat_normalized.T) 
-        off_diagonal_elements = np.sum(np.abs(np.tril(orthogonality_matrix, -1)))
-        diagonal_elements = np.sum(np.diag(orthogonality_matrix))
+        if optimal_n_components>=2:
+            X_flat = FPCA_components.squeeze()  
+            X_flat_normalized = X_flat / np.linalg.norm(X_flat, axis=1, keepdims=True)     
+            orthogonality_matrix = np.dot(X_flat_normalized, X_flat_normalized.T) 
+            off_diagonal_elements = np.sum(np.abs(np.tril(orthogonality_matrix, -1)))
+            diagonal_elements = np.sum(np.diag(orthogonality_matrix))
 
-        ratio=off_diagonal_elements/diagonal_elements
-        # debug and print(f'covariance/correlation: {ratio}')
-        
-        # if overfitting introduces some covariance correct
-        if ratio>ortho_tr:
-            if optimal_n_components>=2:
-                optimal_n_components-=1 # overfitting can cause orthogonality issues
-                debug and print('ortho reduction: ',optimal_n_components)
-                # Fit FPCA with the optimal number of components
-                fpca_discretized = FPCA(
-                n_components=optimal_n_components)
-                fpca_discretized.fit(fd)
-                FPCA_components=fpca_discretized.fit(fd).components_.data_matrix
+            ratio=off_diagonal_elements/diagonal_elements
+            # debug and print(f'covariance/correlation: {ratio}')
+            
+            # if overfitting introduces some covariance correct
+            if ratio>ortho_tr:
+                if optimal_n_components>=2:
+                    optimal_n_components-=1 # overfitting can cause orthogonality issues
+                    debug and print('ortho reduction: ',optimal_n_components)
+                    # Fit FPCA with the optimal number of components
+                    fpca_discretized = FPCA(
+                    n_components=optimal_n_components)
+                    fpca_discretized.fit(fd)
+                    FPCA_components=fpca_discretized.fit(fd).components_.data_matrix
 
         
         # --------- fitting procedure and weight saving -------------------
+        # prepare data for dtaframe
+        components_2d = np.squeeze(FPCA_components)
+        data = components_2d.T
         # prepare data in dataframe
-        col_name=np.arange(1,optimal_n_components+1)
+        col_name = [f'FPC_{i+1}' for i in range(optimal_n_components)]
         df_input_fit=pd.DataFrame(index=grid,columns=col_name,
-                                  data=FPCA_components.T[0])
+                                  data=data)
+        # FPCA_components.T[0]
         # 5: Linear Regression 
         reg=LinearRegression().fit(df_input_fit,target_vect)
         target_predict=reg.predict(df_input_fit)

@@ -106,9 +106,9 @@ from main_input import (input_dict_FPCA,input_dict_massVar_plot,input_dict_emd)
 MODE1: try the code with a random event, chose the variable (debug=True & single_station=True)
 MODE2: if single_station=False, then run for all the events
 # '''
-# debug=False
-# single_station=False # simulate just one event, to try and see results
-# variable_test='q' # q,ssc
+# debug=True
+# single_station=True # simulate just one event, to try and see results
+# variable_test='ssc' # q,ssc
 # station_diff(station_couple,
 #              input_dict_q_1h,input_dict_ssc_1h,
 #              input_dict_ssc_10m,
