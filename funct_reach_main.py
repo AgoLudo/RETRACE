@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from funct_reach import (import_data_stationCouple,
-                         import_event_upstream,reach_morphometry,
+                         reach_morphometry,
                          cross_corr_global,prepare_df2store_cc,cross_corr_events,
                          lags_cel_convert,merge_save,celerities_boxplot)
 
@@ -34,8 +34,8 @@ def time_lag_analysis(station_couple,
    
     # import events 
 
-    event_dict_q  =import_event_upstream(input_events_q,debug ) # hourly
-    event_dict_ssc=import_event_upstream(input_events_ssc,debug) # 10 minutes
+    event_dict_q  =import_df(input_events_q,debug ) # hourly
+    event_dict_ssc=import_df(input_events_ssc,debug) # 10 minutes
     
     # channel morphology
     geom_dict_system=reach_morphometry(debug)

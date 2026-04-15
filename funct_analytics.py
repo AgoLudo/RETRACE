@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import math
 import pandas as pd
 from datetime import timedelta, datetime
@@ -7,6 +8,10 @@ from scipy.interpolate import interp1d
 from scipy.integrate import quad_vec
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+
+from dask import delayed, compute
+from dask.diagnostics import ProgressBar
+
 from funct_reach import (data_prep,save_df)
 
 
@@ -522,7 +527,9 @@ def plot_sim_execution_test(x_up_df,result_df,col_values,variable):
     plt.show()
     
 # -----------------------------------------------------------------
-# comparison between station   
+# comparison between station 
+# ----------------------------------------------------------------
+  
 def sim_execution_test(input_data_dict,data_dict,station_couple,
                     geom_dict,df_global_corr,
                     crosscorr_input_dict,
@@ -649,6 +656,143 @@ def sim_execution_test(input_data_dict,data_dict,station_couple,
             debug and print("Warning: result_df is empty. Skipping plot.")
 
 
+
+def process_single_event(event_date, event_df,
+                         col_values_q, col_time_q, q_up_all, q_down_all, dt_error_q, dt_q,
+                         col_values_ssc, col_time_ssc, ssc_up_all, ssc_down_all, dt_error_ssc, dt_ssc,
+                         x_meters, input_sim_station_difference, Pe_tr, debug):
+    
+    init = event_df['init_event']
+    end = event_df['end_event']
+    total_seconds_event = (end - init).total_seconds()
+    
+    # simulate for discharge
+    result_df_q = simulation_event(col_values_q, col_time_q,
+                                   q_up_all, q_down_all, x_meters,
+                                   init, end, dt_error_q, dt_q, total_seconds_event,
+                                   'q', event_df, input_sim_station_difference, Pe_tr, debug)
+                                   
+    # simulate for ssc
+    result_df_ssc = simulation_event(col_values_ssc, col_time_ssc,
+                                     ssc_up_all, ssc_down_all, x_meters,
+                                     init, end, dt_error_ssc, dt_ssc, total_seconds_event,
+                                     'ssc', event_df, input_sim_station_difference, Pe_tr, debug)
+
+    # merge
+    result_df = merge_event_results(result_df_q, result_df_ssc, debug)
+    
+    if not result_df.empty:
+        return event_date, result_df.dropna()
+    else:
+        return event_date, None
+
+
+
+# def sim_events(station_couple,geom_dict,
+#                 input_dict_q_1h,q_dict_data,
+#                 input_dict_ssc_10min,ssc_dict_data_10min,
+#                 df_global_q,df_global_ssc,
+#                 crosscorr_input_dict_q,crosscorr_input_dict_ssc,
+#                 hydro_reach_df,
+#                 input_sim_station_difference,
+#                 debug):
+    
+#     # import the columns name
+#     col_values_q=input_dict_q_1h['col_values' ]
+#     col_time_q  =input_dict_q_1h['time_values'] 
+#     col_values_ssc=input_dict_ssc_10min['col_values' ]
+#     col_time_ssc  =input_dict_ssc_10min['time_values']
+
+#     # distance in meters
+#     x_meters=geom_dict['distance']
+    
+#     # raw data
+#     q_up_all  =q_dict_data[station_couple['upstream'   ]]
+#     q_down_all=q_dict_data[station_couple['downstream' ]]
+#     ssc_up_all  =ssc_dict_data_10min[station_couple['upstream'   ]]
+#     ssc_down_all=ssc_dict_data_10min[station_couple['downstream' ]]
+    
+#     # average time lag between stations
+#     dt_average_q=np.abs(df_global_q['lag_[h]'])
+#     dt_average_ssc=np.abs(df_global_ssc['lag_[h]'])
+
+#     decimal_part_q, integer_part_q = math.modf(float(dt_average_q.iloc[0]))
+#     hours_q=int(integer_part_q)
+#     minutes_q=np.round(60*decimal_part_q,0)
+#     # correction to average time lag in the reach
+#     dt_q=timedelta(hours=hours_q,minutes=minutes_q) 
+#     dt_error_q=crosscorr_input_dict_q['dt_error']
+
+#     decimal_part_ssc, integer_part_ssc = math.modf(float(dt_average_ssc.iloc[0]))
+#     hours_ssc=int(integer_part_ssc)
+#     minutes_ssc=np.round(60*decimal_part_ssc,0)
+#     # correction to average time lag in the reach
+#     dt_ssc=timedelta(hours=hours_ssc,minutes=minutes_ssc) 
+#     dt_error_ssc=crosscorr_input_dict_ssc['dt_error']
+    
+    
+#    # list of events
+#     events_list=hydro_reach_df.index
+#     total_events = len(events_list)
+
+#     Pe_tr=input_sim_station_difference['Pe_threshold']
+#     # saving dictionary
+#     result_dict={}
+#     for i,event_date in enumerate(events_list):
+#         # dictionary to save data
+#         result_dict[event_date]={}
+        
+#         # load event data
+#         event_df=hydro_reach_df.loc[event_date,:]
+#         # event
+#         init= event_df['init_event']
+#         end = event_df['end_event' ]
+        
+#         # total event data
+#         total_seconds_event=(end - init).total_seconds()
+        
+#         # simulate for discharge
+#         result_df_q=simulation_event(col_values_q,col_time_q,
+#                                     q_up_all,q_down_all,
+#                                     x_meters,
+#                                     init,end,dt_error_q,dt_q,total_seconds_event,
+#                                     'q',event_df,
+                                    
+#                                     input_sim_station_difference,Pe_tr,
+#                                     debug)
+#         # simulate for ssc
+#         result_df_ssc=simulation_event(col_values_ssc,col_time_ssc,
+#                                     ssc_up_all,ssc_down_all,
+#                                     x_meters,
+#                                     init,end,dt_error_ssc,dt_ssc,total_seconds_event,
+#                                     'ssc',event_df,
+                                    
+#                                     input_sim_station_difference,Pe_tr,
+#                                     debug)
+
+#         # merge
+#         result_df=merge_event_results(result_df_q,result_df_ssc,debug)
+
+#         # check that the data is not empty
+#         if not result_df.empty:
+#             result_df=result_df.dropna()
+#             result_dict[event_date]=result_df
+#         else:
+#             debug and print('\n*** failed sim ***\n',event_date,'\n')
+#             if event_date in result_dict: # remove the initialised dict
+#                 del result_dict[event_date]
+
+#         # --- progress bar ---
+#         percent_complete = (i / total_events) * 100
+#         bar_length = 30
+#         filled_length = int(bar_length * i // total_events)
+#         bar = '/' * filled_length + '-' * (bar_length - filled_length)
+#         print(f"\rSimulating events: |{bar}| {percent_complete:.1f} % complete", end='')
+
+#     return result_dict
+
+
+
 def sim_events(station_couple,geom_dict,
                 input_dict_q_1h,q_dict_data,
                 input_dict_ssc_10min,ssc_dict_data_10min,
@@ -698,57 +842,34 @@ def sim_events(station_couple,geom_dict,
 
     Pe_tr=input_sim_station_difference['Pe_threshold']
     # saving dictionary
-    result_dict={}
-    for i,event_date in enumerate(events_list):
-        # dictionary to save data
-        result_dict[event_date]={}
+    # 1. Queue up delayed tasks
+    delayed_tasks = []
+    for i, event_date in enumerate(events_list):
+        event_df = hydro_reach_df.loc[event_date, :]
         
-        # load event data
-        event_df=hydro_reach_df.loc[event_date,:]
-        # event
-        init= event_df['init_event']
-        end = event_df['end_event' ]
-        
-        # total event data
-        total_seconds_event=(end - init).total_seconds()
-        
-        # simulate for discharge
-        result_df_q=simulation_event(col_values_q,col_time_q,
-                                    q_up_all,q_down_all,
-                                    x_meters,
-                                    init,end,dt_error_q,dt_q,total_seconds_event,
-                                    'q',event_df,
-                                    
-                                    input_sim_station_difference,Pe_tr,
-                                    debug)
-        # simulate for ssc
-        result_df_ssc=simulation_event(col_values_ssc,col_time_ssc,
-                                    ssc_up_all,ssc_down_all,
-                                    x_meters,
-                                    init,end,dt_error_ssc,dt_ssc,total_seconds_event,
-                                    'ssc',event_df,
-                                    
-                                    input_sim_station_difference,Pe_tr,
-                                    debug)
-
-        # merge
-        result_df=merge_event_results(result_df_q,result_df_ssc,debug)
-
-        # check that the data is not empty
-        if not result_df.empty:
-            result_df=result_df.dropna()
-            result_dict[event_date]=result_df
+        # Wrap the function call in compute-lazy delayed()
+        task = delayed(process_single_event)(
+            event_date, event_df,
+            col_values_q, col_time_q, q_up_all, q_down_all, dt_error_q, dt_q,
+            col_values_ssc, col_time_ssc, ssc_up_all, ssc_down_all, dt_error_ssc, dt_ssc,
+            x_meters, input_sim_station_difference, Pe_tr, debug
+        )
+        delayed_tasks.append(task)
+    
+    # 2. Execute all tasks in parallel using all available CPU cores
+    n_workers=max(2,os.cpu_count() - 1)  # Leave one core free
+    debug and print(f"Simulating events in parallel using {n_workers} CPU cores...")
+    with ProgressBar():
+        computed_results = compute(*delayed_tasks,scheduler='processes',
+                                   num_workers=n_workers)  
+    
+    # 3. Reassemble the dictionary
+    result_dict = {}
+    for event_date, res_df in computed_results:
+        if res_df is not None:
+            result_dict[event_date] = res_df
         else:
-            debug and print('\n*** failed sim ***\n',event_date,'\n')
-            if event_date in result_dict: # remove the initialised dict
-                del result_dict[event_date]
-
-        # --- progress bar ---
-        percent_complete = (i / total_events) * 100
-        bar_length = 30
-        filled_length = int(bar_length * i // total_events)
-        bar = '/' * filled_length + '-' * (bar_length - filled_length)
-        print(f"\rSimulating events: |{bar}| {percent_complete:.1f} % complete", end='')
+            debug and print(f'\n*** failed sim ***\n {event_date} \n')
 
     return result_dict
 
@@ -851,7 +972,7 @@ def merge_event_results(df_q,df_ssc,debug):
 def save_sim(result_dict,
                input_sim_diff_merge_save,
                debug):
-    print('events analysed: ',len(list(result_dict.keys())),'\n')
+    debug and print('events analysed: ',len(list(result_dict.keys())),'\n')
     # saving routine
     save_df(result_dict,input_sim_diff_merge_save,debug)
 

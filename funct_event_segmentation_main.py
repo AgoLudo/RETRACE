@@ -13,7 +13,7 @@ index_orthogonality_plot,weighted_median,peak_pit_funct,peaks_clean_funct,save_e
 emd_funct,hilbert_deconvolution,import_data,flushing_events,events2exclude,plot_events,plot_events_nat,
 ssc_crop_h2min,plot_ampfreq)
 
-from funct_reach import import_event_upstream
+from funct_reach import import_df
 
 def event_segmentation(input_dict,input_dict_aux,
                        timescale_dict,event_param_dict,
@@ -31,7 +31,6 @@ def event_segmentation(input_dict,input_dict_aux,
     col_values=input_dict['col_values']
     col_values_aux=input_dict_aux['col_values']
     col_time=input_dict['time_values']
-    # file_name=input_dict['file_name']
     station_name=input_dict['station_name']
     
     # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -92,15 +91,15 @@ def hour2_10min_crop(input_dict,
     
     col_values_q=input_dict['col_values']
     df_data_q, _=import_data(input_dict)
-    debug and print('import timeseries ',input_dict['file_name'])
+    debug and print('import timeseries ',input_dict['file_name_in'],'\n')
 
     # import the 10 min resolution data
     df_data_ssc, _=import_data(input_hour2_10min_input)
-    debug and print('import timeseries ',input_hour2_10min_input['file_name'])
+    debug and print('import timeseries ',input_hour2_10min_input['file_name_in'],'\n')
 
     # import 1h events
     input_event_dict=input_hour2_10min_input['input_dict_ssc1h']
-    event_dict_ssc_1h =import_event_upstream(input_event_dict,debug )
+    event_dict_ssc_1h =import_df(input_event_dict,debug )
 
     # perform segmentation
     dt_range=input_hour2_10min_input['timedelta_err']
@@ -110,7 +109,7 @@ def hour2_10min_crop(input_dict,
     
     # ----------------- SAVING -------------------------------------
     path_output=input_hour2_10min_input['path_output']
-    file_name_output=input_hour2_10min_input['file_name_output']
+    file_name_output=input_hour2_10min_input['file_name_out']
     # save .pkl file
     full_file_path = os.path.join(path_output, file_name_output)
     with open(full_file_path, 'wb') as f:

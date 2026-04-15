@@ -11,6 +11,34 @@ from scipy.stats import linregress
 from scipy.optimize import minimize_scalar
 
 # 1. ---------------------- DATA IMPORT ---------------------------------
+def import_df(input_dataframe,debug):
+    file_path=input_dataframe['path_input']
+    file_name=input_dataframe['file_name_in']
+
+    full_file_path = os.path.join(file_path, file_name)
+   
+    # Load the pickle file
+    with open(full_file_path, 'rb') as f:
+        import_df = pickle.load(f)
+    debug and print('import  dataframe: ',file_name,'\n')
+    return import_df
+
+
+def save_df(df2save,input_file_dict,debug):
+    file_path=input_file_dict['path_output']
+    file_name=input_file_dict['file_name_out']
+    
+    file_output = os.path.join(file_path, file_name)
+    
+    if not debug:
+        print('save: ',input_file_dict['file_name_out'],'\n')
+        with open(file_output, 'wb') as f:
+            pickle.dump(df2save, f)
+
+
+
+
+
 def import_data_stationCouple(input_dict,debug):
     path_dir=input_dict['path_input']
     filename_upStation=input_dict['file_name_upstream']
@@ -34,7 +62,10 @@ def import_data_stationCouple(input_dict,debug):
 
     df_dict={}
     for name,filename in zip(list_station,filename_list_station):
-        df=pd.read_csv((path_dir+filename),sep=sep,header=head)
+        file_path=os.path.join(path_dir, filename)
+        
+        df=pd.read_csv(file_path,sep=sep,header=head)
+        
         df[col_time]=pd.to_datetime(df[col_time])
         df=df.set_index(col_time)
         df=df.replace([np.inf, -np.inf], np.nan).dropna()
@@ -45,17 +76,7 @@ def import_data_stationCouple(input_dict,debug):
         df_dict[name]=df_data_smooth
     return df_dict
 
-def import_event_upstream(input_events,debug):
-    file_path=input_events['path_input']
-    file_name=input_events['file_name']
-    
-    full_file_path = os.path.join(file_path, file_name)
-    # Load the pickle file
-    with open(full_file_path, 'rb') as f:
-        event_dict = pickle.load(f)
-    debug and print('import event upstream: ',file_name,'\n')
-    return event_dict
-
+# ----------------------- REACH MORPHOMETRY ---------------------------------
 def reach_morphometry(debug):
     
     # channel characteristics
@@ -505,12 +526,7 @@ def merge_save(lags_dict_q, lags_dict_ssc,merge_save_input_dict,debug):
     lags_CONCAT_df = concatenated_df.copy()
     
     #---------- 3. save------------
-    file_output=(merge_save_input_dict['path_output']
-                 +merge_save_input_dict['file_name'])
-    if not debug:
-        print('save: ',merge_save_input_dict['file_name'])
-        with open(file_output, 'wb') as f:
-            pickle.dump(lags_CONCAT_df, f)
+    save_df(lags_CONCAT_df,merge_save_input_dict,debug)
         
     return lags_CONCAT_df
 
@@ -731,30 +747,15 @@ def celerities_boxplot(celerity_df,plot_celerities_features):
     # Show the plot
     plt.title(r'Virtual celerities and kinematic wave assumption',fontsize=font+2,pad=labelpad+5)
     plt.show()
+    
+
+
+
+
 # ---------------------------------------------------------------------------------
 #           REACH SCALE PROP
 # ---------------------------------------------------------------------------------
-def import_df(input_dataframe,debug):
-    file_path=input_dataframe['path_input']
-    file_name=input_dataframe['file_name']
-    print(file_name)
-    full_file_path = os.path.join(file_path, file_name)
-   
-    # Load the pickle file
-    with open(full_file_path, 'rb') as f:
-        import_df = pickle.load(f)
-        
-    debug and print('import  dataframe: ',file_name,'\n')
-    return import_df
 
-
-def save_df(df2save,input_file_dict,debug):
-    file_output=(input_file_dict['path_output']
-                 +input_file_dict['file_name'])
-    if not debug:
-        print('save: ',input_file_dict['file_name'],'\n')
-        with open(file_output, 'wb') as f:
-            pickle.dump(df2save, f)
 
 
 def quantile_funct(df,col,quant):

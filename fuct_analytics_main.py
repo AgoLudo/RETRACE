@@ -37,7 +37,7 @@ def station_diff(station_couple,
     hydro_reach_df=import_df(input_sim_station_difference,
                              debug)
     
-    if debug or single_station:
+    if debug and single_station:
 
         if variable_test=='ssc':
             debug and print('>> sim_execution_test *main* <<')
@@ -70,7 +70,7 @@ def station_diff(station_couple,
                       input_sim_station_difference,
                       debug)
         
-        print(len(list(result_dict.keys())),'simulations')
+        debug and print(len(list(result_dict.keys())),'simulations')
 
         # merge and save
         save_sim(result_dict,

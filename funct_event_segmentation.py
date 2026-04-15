@@ -11,12 +11,12 @@ import pickle
 def import_data(input_dict):
     # initialize the variables
     path_input=input_dict['path_input']
-    file_name=input_dict['file_name']
+    file_name=input_dict['file_name_in']
     col_time=input_dict['time_values']
     head,sep=input_dict['head'],input_dict['sep']
     
     #-----------------------------------
-    file_dir=(path_input+file_name)
+    file_dir=os.path.join(path_input,file_name)
     df_data=pd.read_csv(file_dir,sep=sep,header=head)
     df_data[col_time]=pd.to_datetime(df_data[col_time])
     df_data=df_data.set_index(col_time)

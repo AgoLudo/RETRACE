@@ -23,6 +23,8 @@ from matplotlib.ticker import LogLocator, FixedLocator,FuncFormatter
 from scipy.stats import gaussian_kde
 import matplotlib.lines as mlines
 
+from funct_reach import import_df, save_df
+
 # ---------------------- side plot functions ---------------------------------
 from matplotlib.ticker import Locator
 
@@ -576,6 +578,10 @@ def FPCA_regression(sim_dict,
                     '\nnon classified events: ',len(event_variable_df)-len(event_variable_df.dropna())
                     )
     
+    # saving the FPCA variables for later analysis
+    event_variable_df2save=event_variable_df.dropna()
+    save_df(event_variable_df2save,input_dict_FPCA,debug=False)
+    
     return [event_variable_df,input_FPCA_variables]
 
 # -----------------------------------------------------------------
@@ -668,155 +674,7 @@ def convert_to_seconds(time_str):
             total_seconds = value * seconds_per_unit
             return total_seconds
 
-def plot_error_SimObs_ssc_season(list_season,
-                          col_values_q,col_values_ssc,
-                          sim_dict,delta_vars_dict,
-                          smoothing_window,polyorder):
-    #  classify events by season 
-    dict_season={season: {} for season in list_season}
-    list_events=list(sim_dict.keys())
-    
-    for event_idx in list_events:
-        # import the observed differences between data at the upstream and dowsntream station
-        df_diff_obs=delta_vars_dict[event_idx].copy()    
-        # import the simulation data
-        df_sim=sim_dict[event_idx].copy()
-        # 
-        # df joined
-        df_joined = df_diff_obs.join( df_sim, how='inner')
 
-        
-        # compute the variable differences
-        q_up_sim  =df_joined[(col_values_q  +'_up'  )].values
-        q_down    =df_joined[(col_values_q  +'_down')].values
-        ssc_up_sim=df_joined[(col_values_ssc+'_up'  )].values
-        ssc_down  =df_joined[(col_values_ssc+'_down')].values
-        
-        
-        df_diff_obs[(col_values_ssc+'_sim')]=ssc_down-ssc_up_sim
-        df_diff_obs[(col_values_q+'_sim')]=q_down-q_up_sim
-        # 
-        # normalize the time index
-        df_diff_obs.index=(df_diff_obs.index-df_diff_obs.index[0])/(
-                            df_diff_obs.index[-1]-df_diff_obs.index[0])
-        
-        # get the season in which the event happened
-        month = event_idx.month
-        season = get_season(month)
-        
-        dict_season[season][event_idx]={}
-        dict_season[season][event_idx]=df_diff_obs
-    
-    # -------- plot the average differences for each season ---------
-    common_length=100
-    # ------- PLOT DISCHARGE ----
-    fig_q, axs_q = plt.subplots(2, 2, figsize=(15, 15), sharey=True)
-    axs_q = axs_q.flatten()
-    fig_ssc, axs_ssc = plt.subplots(2, 2, figsize=(15, 15), sharey=True)
-    axs_ssc = axs_ssc.flatten()
-    
-    # Loop over each season and plot curves.
-    for idx, season in enumerate(list_season):
-        # Lists to store interpolated curves for discharge and SSC for the current season.
-        curves_q = []
-        curves_q_obs=[]
-        curves_ssc = []
-        curves_ssc_obs = []
-        
-        # For each event in the season, interpolate the curves to a common time axis.
-        for event_idx, df in dict_season[season].items():
-            # Define common time grid based on normalized index (0 to 1)
-            x_common = np.linspace(df.index.min(), df.index.max(), common_length)
-            # -----------------------------------------------------------------------------------------------------
-            # -----------------------------------------------------------------------------------------------------
-            # Interpolate discharge differences simulated
-            f_q = interp1d(df.index, df[f"{col_values_q}_sim"],
-                           kind='linear', fill_value="extrapolate")
-            y_q = f_q(x_common)
-            curves_q.append(y_q)
-            
-            # Interpolate SSC differences simulated
-            f_ssc = interp1d(df.index, df[f"{col_values_ssc}_sim"],
-                             kind='linear', fill_value="extrapolate")
-            y_ssc = f_ssc(x_common)
-            curves_ssc.append(y_ssc)
-            # -----------------------------------------------------------------------------------------------------
-            # -----------------------------------------------------------------------------------------------------
-            f_q_obs=interp1d(df.index, df[col_values_q],
-                           kind='linear', fill_value="extrapolate")
-            y_q_obs=f_q_obs(x_common)
-            curves_q_obs.append(y_q_obs)
-            # ssc
-            f_ssc_obs = interp1d(df.index, df[col_values_ssc],
-                             kind='linear', fill_value="extrapolate")
-            y_ssc_obs = f_ssc_obs(x_common)
-            curves_ssc_obs.append(y_ssc_obs)
-            
-            
-            
-        # Convert list of curves to numpy arrays for median computation
-        curves_q = np.array(curves_q)
-        curves_ssc = np.array(curves_ssc)
-        curves_q_obs = np.array(curves_q_obs)
-        curves_ssc_obs = np.array(curves_ssc_obs)
-        
-        # Plot all curves in light grey (if any curves exist)
-       
-        for curve in curves_q:
-                axs_q[idx].plot(x_common, curve, color='lightgrey', lw=0.5)
-  
-        
-        for curve in curves_ssc:
-                axs_ssc[idx].plot(x_common, curve/1000, 
-                                  color='lightgrey', lw=0.5)
-
-        
-        if len(curves_q) > 0:
-            curves_q = np.array(curves_q)
-            median_q = np.nanmedian(curves_q, axis=0)
-            axs_q[idx].plot(x_common, median_q, 
-                            color='black', lw=2, label='Median sim')
-  
-        
-        if len(curves_q_obs) > 0:
-            curves_q_obs = np.array(curves_q_obs)
-            median_q_obs = np.nanmedian(curves_q_obs, axis=0)
-            axs_q[idx].plot(x_common, median_q_obs, 
-                            color='black', linestyle=':', lw=2, label='Median obs')
-
-        if len(curves_ssc) > 0:
-            curves_ssc = np.array(curves_ssc)
-            median_ssc = np.nanmedian(curves_ssc, axis=0)
-            axs_ssc[idx].plot(x_common, median_ssc / 1000, 
-                              color='black', lw=2, label='Median')
-
-        if len(curves_ssc_obs) > 0:
-            curves_ssc_obs = np.array(curves_ssc_obs)
-            median_ssc_obs = np.nanmedian(curves_ssc_obs, axis=0)
-            axs_ssc[idx].plot(x_common, median_ssc_obs / 1000,
-                               color='black', linestyle=':', lw=2, label='Median')
-
-        
-        # Set titles and labels for each subplot
-        axs_q[idx].set_title(f"{season} - Discharge")
-        axs_q[idx].set_xlabel("Normalized Time")
-        if idx == 0:
-            axs_q[idx].set_ylabel(f"{col_values_q} difference")
-        axs_q[idx].legend()
-        
-        axs_ssc[idx].set_title(f"{season} - SSC")
-        axs_ssc[idx].set_xlabel("Normalized Time")
-        if idx == 0:
-            axs_ssc[idx].set_ylabel(f"{col_values_ssc} difference")
-        axs_ssc[idx].legend()
-
-    for ax in axs_ssc:
-        ax.set_yscale('symlog', linthresh=0.1)
-    for ax in axs_q:
-        ax.set_yscale('symlog', linthresh=100)
-    fig_q.tight_layout()
-    fig_ssc.tight_layout()
-    plt.show()
 
 
 # ----------------------------------------------------------------- 
@@ -1711,7 +1569,7 @@ def plot_mass_classification(dt,event_class_dict,
                 width=width,
                 color=color,
                 alpha=0.5,
-                label=r'$\Delta M$' if j == N-1 else "")
+                label=input_dict_massVar_plot['legend_var'] if j == N-1 else "")
 
         ax.set_xticks(x)
         xlabels = [label_list[v] for v in list_var]
@@ -1733,27 +1591,6 @@ def plot_mass_classification(dt,event_class_dict,
 # --------------------------------------------------------------------
 #               emd event scale
 # ------------------------------------------------------------------
-def save_df(df2save,input_file_dict,debug):
-    file_output=(input_file_dict['path_output']
-                 +input_file_dict['file_name'])
-    if not debug:
-        print('save: ',input_file_dict['file_name'],'\n')
-        with open(file_output, 'wb') as f:
-            pickle.dump(df2save, f)
-            
-            
-def import_df(input_dataframe,debug):
-    file_path=input_dataframe['path_input']
-    file_name=input_dataframe['file_name']
-    print(file_name)
-    full_file_path = (file_path+ file_name)
-    
-    # Load the pickle file
-    with open(full_file_path, 'rb') as f:
-        import_df = pickle.load(f)
-        
-    debug and print('import  dataframe: ',file_name,'\n')
-    return import_df
             
 def prepare_emd_target(col_q,col_ssc,sim_dict,list_events,
                        window_length,polyorder,target_columns,
@@ -2242,7 +2079,7 @@ def plot_HHT_var_season(event_class_dict,
                 # title=('IMFs min number: '+str(min_num)),
                 legend=ax.legend(loc='center right',fontsize=labelsize)   
                 legend.get_title().set_fontsize(labelsize)
-                ax.set_title((r'$\Delta M(t)$ timescales in ' + season),fontsize=labelsize+2)
+                ax.set_title((input_dict_emd['title'] + season),fontsize=labelsize+2)
                 pos-=2 # increase the position of one
 
         med_val=np.array(med_val)
