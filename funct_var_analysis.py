@@ -542,7 +542,7 @@ def FPCA_regression(sim_dict,
         # 6 : weights
         coefficients=reg.coef_
         scores=fpca_discretized.transform(fd)
-        importance_score=np.abs(scores @ coefficients) # matrix dot product
+        importance_score=(scores @ coefficients)**2 # matrix dot product
         importance_score=importance_score/np.sum(importance_score) # normalized
         
         # r2 score assessment

@@ -60,12 +60,12 @@ from main_input import (input_dict_FPCA,input_dict_massVar_plot,input_dict_emd)
 # debug = True
 # ampfreq_contribution_plot(input_dict,input_dict_aux,
 #                               input_ampfreq_plot,timescale_dict,
-#                               debug)
+                            #   debug)
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                       MODULE 2: Estimation of the virtual velocity
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# debug=True
+# debug=False
 # # ---------------- run the cross correlation ---------------
 # time_lag_analysis(station_couple,
 #                       input_dict_q_1h,
@@ -86,14 +86,14 @@ from main_input import (input_dict_FPCA,input_dict_massVar_plot,input_dict_emd)
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                      MODULE 3: Fitting of a reach-averaged rating curve 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# debug=True
-# reach_scale_prop(station_couple,
-#                  input_dict_q_1h,input_dict_ssc_1h,input_dict_ssc_10m,
-#                  input_cel_df,
-#                  qU_reach_input_dict,qDu_plot_input_dict,
-#                  reckin_input_dict,
-#                  diffusion_input_dict,
-#                  debug)
+debug=False
+reach_scale_prop(station_couple,
+                 input_dict_q_1h,input_dict_ssc_1h,input_dict_ssc_10m,
+                 input_cel_df,
+                 qU_reach_input_dict,qDu_plot_input_dict,
+                 reckin_input_dict,
+                 diffusion_input_dict,
+                 debug)
 
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,7 +110,7 @@ MODE2: if single_station=False, then run for all the events
 # def main():
 #     debug=False
 #     single_station=False # simulate just one event, to try and see results
-#     variable_test='q' # q,ssc
+#     variable_test='ssc' # q,ssc
 #     station_diff(station_couple,
 #                 input_dict_q_1h,input_dict_ssc_1h,
 #                 input_dict_ssc_10m,
@@ -121,7 +121,7 @@ MODE2: if single_station=False, then run for all the events
 #     main()
 
 # ---------------- simulation mass uncertainty estimation ---------------------
-# debug=False
+# debug=True
 # _=simulation_uncertainty(station_couple,
 #                        input_dict_q_1h,input_dict_ssc_10m,
 #                        input_sim_station_difference,
@@ -132,11 +132,11 @@ MODE2: if single_station=False, then run for all the events
 #                         MODULE 5: Time differencing interpretation
 #                         MODULE 6: Energy-spectrum analysis
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-debug=False
-event_mass_analysis(station_couple,
-                    input_dict_q_1h,input_dict_ssc_10m, 
-                    input_sim_station_difference,
-                    input_dict_FPCA,
-                    input_dict_massVar_plot,
-                    input_dict_emd,
-                        debug)
+# debug=True
+# event_mass_analysis(station_couple,
+#                     input_dict_q_1h,input_dict_ssc_10m, 
+#                     input_sim_station_difference,
+#                     input_dict_FPCA,
+#                     input_dict_massVar_plot,
+#                     input_dict_emd,
+#                         debug)

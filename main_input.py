@@ -180,7 +180,7 @@ crosscorr_input_dict_ssc={
 
 # merge the events into unique list
 merge_save_input_dict={
-    'tr_time_overlap':timedelta(hours=6), # max N of hours overlap between events to be crossed out
+    'tr_time_overlap':timedelta(hours=12), # max N of hours overlap between events to be crossed out
     'path_output':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\time_lags',
     'file_name_out':('lags_df_'+station_couple['upstream']+'_'+station_couple['downstream']+r'.pkl')}
 
@@ -225,7 +225,7 @@ qU_reach_input_dict={
     'quant_low':0.25,
     'quant_mid':0.5,
     'min_len': 4, # minimum number of measurements per event
-    'max_delay':16 #hours
+    'max_delay':12 #hours
     }
 
 #plot properties 
@@ -248,19 +248,19 @@ qDu_plot_input_dict={
     # var list [q,U,D,dqdD,delay,dQdt,dQdt_max,'init_event',
     #    'end_event', 'C', 'd84', 'd50', 'err_d84', 'Elder', 'Fisher', 'Liu',
     #    'Iwasa_Aya', 'Seo_Cheong', 'Koussis', 'K_q']
-    'var_x': 'q',
-    'var_y':'d84',
+    'var_x': 'U',
+    'var_y':'D',
     'x_scale':'linear',
     'y_scale':'linear'
 }
 
 reckin_input_dict={
     'new_var':['C','d84','d50','err_d84'],
-    'tr_error_zero':1e-11, # error in the d84 search routine
-    'min_d84':1e-2, # minimum vale of d84
+    'tr_error_zero':1e-6, # error in the d84 search routine
+    'min_d84':2e-3, # minimum vale of d84
     'min_C':2,  # recking 2011: minimum C value for empirical relation
     'min_submergence':0.5, # recking 2011: minimum sub. value for empirical relation
-    'd84_d50':2.1, # recking 2011: estimation d84/d50 value for empirical relation
+    'd84_d50':2.2, # recking 2011: estimation d84/d50 value for empirical relation
                    }
 
 
@@ -313,7 +313,7 @@ font_dict = {
     "legend_size": 16,
 }
 
-# Alanlytical solution testing
+# Analytical solution testing
 configuration_test='advdiff' #(advdiff/diff) 
 input_sim_ssc_test={
     'diffusion_coeff': 10, #m²/s
@@ -363,10 +363,6 @@ columns_FPCA=['delta_q',
              'ssc_input',
              'target']
 
-columns_FPCA_mass=['delta_q',
-             'delta_ssc',
-             'target']
-
 input_dict_FPCA={
     'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\simulation',
     'path_output':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\FPCA_analysis',
@@ -380,8 +376,7 @@ input_dict_FPCA={
     'exp_variance_threshold':0.99, #explained variance by the FPCAs 
     'orthogonality_threshold':0.1, # threshold over the normalized dot product
     'r2_threshold':0.3, # fitting threshold (adjusted r2) # <<<<
-    'columns_FPCA':columns_FPCA,
-    'columns_mass_PCA':columns_FPCA_mass
+    'columns_FPCA':columns_FPCA
 }
 
 input_dict_plot_mass = {
@@ -395,7 +390,7 @@ input_dict_plot_mass = {
     'error_line_width': 0.7,
     'alpha':0.2,
     'x_label': 'Time',
-    'y_label': r'$\frac{M_{sim}-M_{obs}}{ M_{obs}}$',
+    'y_label': r'$\frac{M_{sim}-M_{obs}}{M_{obs}}$',
     'labelfont':14,
     'title': 'Analytical model mass conservation',
     'grid': True,
@@ -415,7 +410,6 @@ input_dict_plot_mass = {
             }
             ]
     }
-
 
 
 list_season= ['spring','summer','autumn','winter']

@@ -353,7 +353,7 @@ def cross_corr_events(lags_dict,variable,event_dict, # target event
                       df_data_dict_aux,input_dict_aux,
                       debug):
     '''
-    performa the cross correlation event per event
+    perform the cross correlation event per event
     '''
     # target event variable input data
     col_values    =input_dict  ['col_values'        ]
@@ -539,6 +539,7 @@ def to_seconds(time_value):
 
 def lags_cel_convert(lags_CONCAT_df,geom_dict,
                      lag2cel_input_dict,debug):
+    
     lags_df=lags_CONCAT_df.copy() #--lags calculated
     #  events list
     events_index=lags_df.index
