@@ -39,8 +39,10 @@ def simulation_uncertainty(station_couple,
                                            input_sim_station_difference,
                                            input_dict_FPCA,sim_dict,
                                            debug)
+    
+    
     if debug:
-        plot_mass_error(rel_mass_df,input_dict_plot_mass,debug)
+        plot_mass_error(rel_mass_df,input_dict_plot_mass)
     
     
     return delta_vars_dict

@@ -370,7 +370,6 @@ input_dict_FPCA={
     'file_name_out':('FPCA_'+station_couple['upstream']+'_'+station_couple['downstream']+'_df.pkl'),
     'col_values_q':input_dict_q_1h['col_values'],
     'col_values_ssc':input_dict_ssc_1h['col_values'],
-    'rel_mass_threshold':0.6, # max error on the mass routing # <<<<
     'window_size':3, # number of time steps (6 == 1 hour)
     'polyorder':1,
     'exp_variance_threshold':0.99, #explained variance by the FPCAs 
@@ -380,35 +379,23 @@ input_dict_FPCA={
 }
 
 input_dict_plot_mass = {
-    'figure_size': (10, 6),
+    'figure_size': (10, 10),
+    'min_data_bins': 10, # min number of data points in the bin to be plotted
     'marker_style': 'o',
     'marker_color': 'navy',
     'avg_line_color': 'red',
     'error_color': 'grey',
     'marker_edge_color': 'navy',
     'marker_size': 4,
-    'error_line_width': 0.7,
+    'error_line_width': 2.5,
     'alpha':0.2,
-    'x_label': 'Time',
-    'y_label': r'$\frac{M_{sim}-M_{obs}}{M_{obs}}$',
-    'labelfont':14,
+    'x_label': r'$|M_{obs}|$',
+    'y_label': r'$|M_{sim}|$',
+    'labelfont':16,
+    'labelpad':10,
     'title': 'Analytical model mass conservation',
     'grid': True,
-    'grid_line_width': 0.1,
-    'annotations': [
-        {
-            'position': (0.05, 0.95),
-            'fontsize': 12,
-            'horizontal_alignment': 'left',
-            'vertical_alignment': 'center'
-        },
-        {
-            'position': (0.05, 0.90),
-            'fontsize': 12,
-            'horizontal_alignment': 'left',
-            'vertical_alignment': 'center'
-            }
-            ]
+    'grid_line_width': 0.1
     }
 
 
@@ -437,6 +424,9 @@ label_list={
 
 
 input_dict_massVar_plot={
+    # new columns name
+    'col_mass': 'delta_mass_ton',
+    'col_mass_cum': 'delta_mass_cum_ton',
     'erosion_color':'red',
     'deposition_color':'blue',
     'erosion_color_obs':'firebrick',
@@ -456,6 +446,16 @@ input_dict_massVar_plot={
     'labelpad':17,
     'cum_linestyle':'--',
     'linthreshold_cum_mass':100, # tons under which there is uncertainty, the log plot will be linear
+    # ------ mass budget plot -----
+    'figsize_budget':(8, 7),
+    'title_budget': r'Event Mass Budget',
+    'xlabel_budget': r'$\Delta\,Mass_{obs}\;[ton]$',
+    'ylabel_budget': r'$\Delta\,Mass_{sim}\;[ton]$',
+    'markersize_budget':50,
+    'mixed_coloring_budget':'dimgray',
+    'labelsize_budget':18,
+    'labelpad_budget':15,
+    'linewidth_budget':1.5,
     # ------ ratio plot -----
     'figsize_ratio':(10, 6),
     'title_ratio': r'Event Mass Exchange Ratio',

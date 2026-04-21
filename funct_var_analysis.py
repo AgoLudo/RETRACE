@@ -80,8 +80,7 @@ def mass_conservation(df_q,df_ssc,
     dt_sim=(df_sim.index[3]-df_sim.index[2]).total_seconds()
     
     # ------ mass simulation-----
-   
-    q_up_sim=df_sim[(col_values_q+'_up')].values
+    q_up_sim  =df_sim[(col_values_q  +'_up')].values
     ssc_up_sim=df_sim[(col_values_ssc+'_up')].values
     
     vect_sim=q_up_sim*ssc_up_sim/1000
@@ -92,6 +91,7 @@ def mass_conservation(df_q,df_ssc,
     # time observation init
     init_obs_q=event_init-timedelta_q+sigma_t_q
     init_obs_ssc=event_init-timedelta_ssc+sigma_t_ssc
+    
     # time observation end
     end_obs_q=event_end-timedelta_q-sigma_t_q
     end_obs_ssc=event_end-timedelta_ssc-sigma_t_ssc
@@ -105,7 +105,7 @@ def mass_conservation(df_q,df_ssc,
         n = len(df_sim)  # target length for deltas
         nan_arr = np.full(n, np.nan)
         debug and print(event_init,'** no Q and SSC data overlap **')
-        return np.nan, np.nan, nan_arr, nan_arr, df_sim.index
+        return np.nan, np.nan, np.nan, nan_arr, nan_arr, df_sim.index
     
     q_obs_values=joined_df[col_values_q].values
     ssc_obs_values=joined_df[col_values_ssc].values
@@ -114,9 +114,6 @@ def mass_conservation(df_q,df_ssc,
     
     # calculate mass
     mass_obs=np.nansum(dt_sim*vect_obs)
-
-    # calculate the mass difference
-    rel_mass = (mass_up_sim-mass_obs)/mass_obs
     
     # estimate the error mass based on the time difference
     vect_obs_clean = pd.Series(vect_obs).dropna()
@@ -126,10 +123,9 @@ def mass_conservation(df_q,df_ssc,
     N_sim=len(vect_sim_clean)
     
     error_mass= (abs(N_obs-N_sim)*dt_sim*
-                 np.nanmin(vect_obs_clean)/1000)/mass_obs
+                 np.nanmin(vect_obs_clean))/mass_obs
     # 
-    
-    # import the downstream observations ( REAL DATA)
+    # import the downstream observations (REAL DATA)
     q_down=df_sim[(col_values_q+'_down')].values
     ssc_down=df_sim[(col_values_ssc+'_down')].values
     
@@ -156,7 +152,7 @@ def mass_conservation(df_q,df_ssc,
     # -----------------------------------------------------------
     new_time_index=df_sim.index
     
-    return rel_mass,error_mass,delta_ssc_obs,delta_q_obs,new_time_index
+    return mass_obs,mass_up_sim,error_mass,delta_ssc_obs,delta_q_obs,new_time_index
 
 def mass_conservation_routine(station_couple,
                               q_dict_data,ssc_dict_data,
@@ -199,7 +195,8 @@ def mass_conservation_routine(station_couple,
     # event list
     event_list=list(sim_dict.keys())
     # lists to save
-    rel_mass_list=[]
+    mass_obs_list=[]
+    mass_up_sim_list=[]
     err_list=[]
     # 
     delta_vars_dict={} # calculate the delta ssc based just on event routing (no advection diffusion)
@@ -222,7 +219,7 @@ def mass_conservation_routine(station_couple,
         sigma_t_q  =timedelta(seconds=np.sqrt(2*k_q  *L)/(lambda_q  **3))
         sigma_t_ssc=timedelta(seconds=np.sqrt(2*k_ssc*L)/(lambda_ssc**3))
         # 
-        (rel_mass,err,
+        (mass_obs,mass_up_sim,err_mass,
          delta_ssc_obs,delta_q_obs,
          new_time_index)=mass_conservation(q_df_10min,ssc_df_10m,
                                    col_values_q,col_values_ssc,
@@ -230,88 +227,172 @@ def mass_conservation_routine(station_couple,
                                    sigma_t_q,sigma_t_ssc,
                                    time_step,
                                    sim_df,debug)
+        
         # save to list the scalar value for the mass
-        rel_mass_list.append(rel_mass)
-        err_list.append(err)
+        mass_obs_list.append(mass_obs)
+        mass_up_sim_list.append(mass_up_sim)
+        err_list.append(err_mass)
         
         # save df differences from data
         df2save=pd.DataFrame(index=new_time_index,
                              columns=[col_values_q,col_values_ssc])
+        
         df2save[col_values_q]=delta_q_obs
         df2save[col_values_ssc]=delta_ssc_obs
         delta_vars_dict[event]=df2save
         
         # save the time step differences from discharge and ssc to datafreme and dictionary
+    
     rel_mass_df = pd.DataFrame({
-        'rel_mass': rel_mass_list,
+        'rel_mass': (np.array(mass_up_sim_list)-np.array(mass_obs_list))/np.array(mass_obs_list),
+        'mass_obs': mass_obs_list,
+        'mass_sim': mass_up_sim_list,
         'error': err_list
             }, index=event_list)
-    
-    # clean simulations
-    rel_mass_thr=input_dict_FPCA['rel_mass_threshold']
-    rel_mass_df=rel_mass_df[rel_mass_df['rel_mass']<rel_mass_thr]
     # 
-    
     return rel_mass_df,delta_vars_dict
 
-def plot_mass_error(rel_mass_df,input_dict,debug):
+def plot_mass_error(rel_mass_df,input_dict):
+    # 'mass_obs'
+    # 'mass_sim'
+    
     # Ensure the DataFrame is sorted by the index (time)
     rel_mass_df = rel_mass_df.sort_index()
-
-    # Calculate and print the overall relative mass error
-    overall_rel_mass_error = np.round(np.nanmean(rel_mass_df['rel_mass'].values),4)
-    debug and print(f"relative mass difference: {overall_rel_mass_error:.4f}")
-    # Calculate the standard deviation of the rel_mass distribution
-    rel_mass_std =np.nanstd( rel_mass_df['rel_mass'].values)
-
-    # Create the upper and lower bounds for the error lines
-    upper_bound = overall_rel_mass_error + rel_mass_std
-    lower_bound = overall_rel_mass_error - rel_mass_std
-     
-     # Calculate and print the relative error over time
-    rel_error_over_time = np.round(rel_mass_df['error'].median(),4)
-    debug and print(f"mass difference error: {rel_error_over_time}")
     
+    # Get absolute values for mass_obs and mass_sim
+    mass_obs_abs = np.abs(rel_mass_df['mass_obs'].values)
+    mass_sim_abs = np.abs(rel_mass_df['mass_sim'].values)
+    
+    # Remove NaN values
+    valid_mask = ~(np.isnan(mass_obs_abs) | np.isnan(mass_sim_abs))
+    mass_obs_clean = mass_obs_abs[valid_mask]/1000
+    mass_sim_clean = mass_sim_abs[valid_mask]/1000
+
+    rel_mass = (rel_mass_df['mass_sim']-rel_mass_df['mass_obs'])/rel_mass_df['mass_obs']
+    overall_rel_mass_error = np.round(np.nanmedian(rel_mass),4)
+    print(f"relative mass difference: {overall_rel_mass_error:.4f}")
+
+    # Calculate and print the relative error over time
+    rel_error_over_time = np.round(rel_mass_df['error'].median(),4)
+    print(f"mass difference error: {rel_error_over_time}")
+    
+    
+    # Create bins in log space (1 order of magnitude wide)
+    log_mass_obs = np.log10(mass_obs_clean)
+    log_mass_sim = np.log10(mass_sim_clean)
+    
+    # Define bin edges (doubled bins: 0.5 order of magnitude = 0.5 unit in log space)
+    log_min = np.floor(log_mass_obs.min())
+    log_max = np.ceil(log_mass_obs.max())
+    bin_edges = np.arange(log_min, log_max + 1, 0.25)
+    
+    # Digitize data into bins
+    bin_indices = np.digitize(log_mass_obs, bin_edges) - 1
+    
+    # Calculate median and std for each bin
+    binned_log_obs = []
+    binned_log_sim = []
+    binned_std_sim = []
+    
+    min_data_bins = input_dict['min_data_bins']
+    for i in range(len(bin_edges) - 1):
+        mask = bin_indices == i
+        if np.sum(mask) >= min_data_bins:
+            binned_log_obs.append(np.mean(log_mass_obs[mask]))
+            binned_log_sim.append(np.median(log_mass_sim[mask]))
+            binned_std_sim.append(np.std(log_mass_sim[mask]))
+    
+    
+    binned_log_obs = np.array(binned_log_obs)
+    binned_log_sim = np.array(binned_log_sim)
+    binned_std_sim = np.array(binned_std_sim)
     
     plt.figure(figsize=input_dict['figure_size'])
 
-    plt.errorbar(rel_mass_df.index, rel_mass_df['rel_mass'],
-                 yerr=rel_mass_df['error'],
-                 fmt=input_dict['marker_style'],
-                 color=input_dict['marker_color'],
-                 ecolor=input_dict['error_color'],
-                 markeredgecolor=input_dict['marker_edge_color'],
-                 markersize=input_dict['marker_size'],
-                 elinewidth=input_dict['error_line_width'])
-# Plot the overall relative mass error line
-    plt.hlines(y=overall_rel_mass_error, 
-               xmin=rel_mass_df.index.min(), 
-               xmax=rel_mass_df.index.max(),
-                color=input_dict['avg_line_color'],
-                linewidth=input_dict['error_line_width']*2)
-
-
-    # Fill the area between the upper and lower bounds with a pale color
-    plt.fill_between(rel_mass_df.index, 
-                     lower_bound, upper_bound, 
-                     color=input_dict['error_color'], 
-                     alpha=input_dict['alpha'])
+    # Scatter plot: mass_sim (y-axis) vs mass_obs (x-axis) in log-log scale
+    plt.scatter(mass_obs_clean, mass_sim_clean,
+                marker=input_dict['marker_style'],
+                c=input_dict['marker_color'],
+                edgecolor=input_dict['marker_edge_color'],
+                s=input_dict['marker_size'],
+                label='Data points')
     
-    plt.xlabel(input_dict['x_label'],fontsize=input_dict['labelfont'])
-    plt.ylabel(input_dict['y_label'],fontsize=input_dict['labelfont']+5)
-    plt.title(input_dict['title'],fontweight='bold',fontsize=input_dict['labelfont']+4)
-    plt.grid(input_dict['grid'], lw=input_dict['grid_line_width'])
+    # Plot binned medians with error bars
+    binned_obs_linear = 10 ** binned_log_obs
+    binned_sim_linear = 10 ** binned_log_sim
+    binned_std_linear = binned_sim_linear * binned_std_sim  # Convert log std to linear scale (approximate)
+    
+    # plt.errorbar(binned_obs_linear, binned_sim_linear,
+    #              yerr=binned_std_linear,
+    #              fmt='o',
+    #              color='red',
+    #              markersize=8,
+    #              capsize=5,
+    #              capthick=2,
+    #              elinewidth=2,
+    #              label='Binned medians ± std')
+    
+    # Fit linear regression to binned median values in log-log space
+    X = binned_log_obs.reshape(-1, 1)
+    reg = LinearRegression().fit(X, binned_log_sim)
+    slope = reg.coef_[0]
+    intercept = reg.intercept_
+    r2_fit = reg.score(X, binned_log_sim)
+    
+    # Calculate residuals using original unbinned data
+    log_sim_pred = slope * log_mass_obs + intercept
+    residuals_unbinned = log_mass_sim - log_sim_pred
+    residuals_std = np.std(residuals_unbinned)
+    print(f"Residuals std (original data): {residuals_std:.4f}")
+    
+    # Generate fitted line values in log-log space
+    x_fit = np.logspace(np.log10(mass_obs_clean.min()), np.log10(mass_obs_clean.max()), 100)
+    log_x_fit = np.log10(x_fit)
+    log_y_fit = slope * log_x_fit + intercept
+    y_fit = 10 ** log_y_fit
+    
+    # Calculate 95% confidence interval in log space
+    ci_95 = 1.96 * residuals_std
+    log_y_fit_upper = log_y_fit + ci_95
+    log_y_fit_lower = log_y_fit - ci_95
+    
+    # Convert back to linear space
+    y_fit_upper = 10 ** log_y_fit_upper
+    y_fit_lower = 10 ** log_y_fit_lower
+    
+    # Plot fitted line with equation in label
+    label=(input_dict['y_label']+f' = {slope:.3f}'+input_dict['x_label']+f' + {intercept:.3f}')
+    plt.plot(x_fit, y_fit,
+             color=input_dict['avg_line_color'],
+             linewidth=input_dict['error_line_width'],
+             linestyle='-',
+             label=label)
+    
+    # Fill uncertainty band (95% CI)
+    plt.fill_between(x_fit, y_fit_lower, y_fit_upper,
+                     color='crimson',
+                     alpha=input_dict['alpha'],
+                     label='95% Confidence interval')
+    
+    # Add 1:1 reference line
+    min_val = min(mass_obs_clean.min(), mass_sim_clean.min())
+    max_val = max(mass_obs_clean.max(), mass_sim_clean.max())
+    plt.plot([min_val, max_val], [min_val, max_val],
+             color='k',
+             linewidth=input_dict['error_line_width']*0.5,
+             linestyle='--',
+             label='1:1 line')
+    
+    # Set log-log scale
+    plt.xscale('log')
+    plt.yscale('log')
+    
+    plt.xlabel((input_dict['x_label']+' [ton]'), fontsize=input_dict['labelfont'],labelpad=input_dict['labelpad'])
+    plt.ylabel((input_dict['y_label']+' [ton]'), fontsize=input_dict['labelfont'],labelpad=input_dict['labelpad'])
+    # plt.title(input_dict['title'], fontweight='bold', fontsize=input_dict['labelfont']+4)
+    plt.grid(input_dict['grid'], lw=input_dict['grid_line_width'], which='both')
+    plt.legend()
 
-    for annotation in input_dict['annotations']:
-        plt.annotate(f'mass difference: {overall_rel_mass_error:.4f}' 
-                     if annotation['position'] == (0.05, 0.95) else
-                     f'average time error: {rel_error_over_time}',
-                     
-                     xy=annotation['position'],
-                     xycoords='axes fraction',
-                     fontsize=annotation['fontsize'],
-                     ha=annotation['horizontal_alignment'],
-                     va=annotation['vertical_alignment'])
 
     plt.show()
 
@@ -846,8 +927,8 @@ def mass_variation(col_values_q,col_values_ssc,dt,
     '''
     rel_mass_df = rel_mass_df.sort_index()
     list_sim=rel_mass_df.index
-    col_mass='delta_mass_ton'
-    col_mass_cum='delta_mass_cum_ton'
+    col_mass=input_dict_massVar_plot['col_mass']
+    col_mass_cum=input_dict_massVar_plot['col_mass_cum']
     
     delta_mass_df=pd.DataFrame(index=list_sim,
                                columns=[col_mass,col_mass_cum])
@@ -867,11 +948,11 @@ def mass_variation(col_values_q,col_values_ssc,dt,
         mass_input=calc_cumulate_mass(q_in,ssc_in,dt)
         mass_output=calc_cumulate_mass(q_out,ssc_out,dt)
         
-        delta_mass=mass_output-mass_input
-        delta_mass_df.loc[event_idx,col_mass]=delta_mass/1000 # express in [tons]
+        delta_mass=(mass_output-mass_input)/1000 # express in [tons]
+        delta_mass_df.loc[event_idx,col_mass]=delta_mass
         # positive for erosion, negative for deposition
         # 
-        delta_mass_df_obs.loc[event_idx,col_mass]= (delta_mass/1000)/(
+        delta_mass_df_obs.loc[event_idx,col_mass]= delta_mass/(
                                         1+rel_mass_df.loc[event_idx,'rel_mass'])
          
     # calculate also the cumulative value  
@@ -994,6 +1075,115 @@ def mass_variation(col_values_q,col_values_ssc,dt,
         plt.show()
     
     return delta_mass_df,delta_mass_df_obs
+
+def plot_event_budget(delta_mass_df,delta_mass_df_obs,
+                      input_dict_massVar_plot):
+    '''
+    Plot event mass budget: observed mass (x-axis) vs simulated mass (y-axis)
+    with symlog scaling for both axes
+    
+    IN
+    delta_mass_df: DataFrame with simulated mass variation
+    delta_mass_df_obs: DataFrame with observed mass variation
+    input_dict_massVar_plot: dictionary with plot parameters
+    
+    OUT
+    Scatter plot with 1:1 reference line
+    '''
+    
+    delta_mass_sim = delta_mass_df.loc[:, input_dict_massVar_plot['col_mass']].values
+    delta_mass_obs = delta_mass_df_obs.loc[:, input_dict_massVar_plot['col_mass']].values
+    
+    # Extract plot parameters
+    figsize = input_dict_massVar_plot['figsize_budget']
+    title = input_dict_massVar_plot['title_budget']
+    xlabel = input_dict_massVar_plot['xlabel_budget']
+    ylabel = input_dict_massVar_plot['ylabel_budget']
+    linthresh = input_dict_massVar_plot['linthreshold_cum_mass']
+    marker_size = input_dict_massVar_plot['markersize_budget']
+    erosion_color = input_dict_massVar_plot['erosion_color']
+    deposition_color = input_dict_massVar_plot['deposition_color']
+    uncertain_color = input_dict_massVar_plot['mixed_coloring_budget']
+    labelsize = input_dict_massVar_plot['labelsize_budget']
+    labelpad = input_dict_massVar_plot['labelpad_budget']
+    
+    
+    
+    # Create figure and axis
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # Separate data by event type
+    erosive_mask = (delta_mass_sim > 0) & (delta_mass_obs > 0)
+    deposition_mask = (delta_mass_sim < 0) & (delta_mass_obs < 0)
+    uncertain_mask = ~(erosive_mask | deposition_mask)
+    
+    # Scatter plot for erosive events (both positive)
+    ax.scatter(delta_mass_obs[erosive_mask], delta_mass_sim[erosive_mask],
+               marker='o',
+               c=erosion_color,
+               s=marker_size,
+               label='Erosion',
+               alpha=0.8)
+    
+    # Scatter plot for deposition events (both negative)
+    ax.scatter(delta_mass_obs[deposition_mask], delta_mass_sim[deposition_mask],
+               marker='o',
+               c=deposition_color,
+               s=marker_size,
+               label='Deposition',
+               alpha=0.8)
+    
+    # Scatter plot for uncertain/mixed events
+    ax.scatter(delta_mass_obs[uncertain_mask], delta_mass_sim[uncertain_mask],
+               marker='o',
+               c=uncertain_color,
+               s=marker_size,
+               label='Uncertain')
+    
+    # Add 1:1 reference line
+    min_val = min(delta_mass_obs.min(), delta_mass_sim.min())
+    max_val = max(delta_mass_obs.max(), delta_mass_sim.max())
+    ax.plot([min_val, max_val], [min_val, max_val],
+            color='k',
+            linewidth=input_dict_massVar_plot['linewidth_budget'],
+            linestyle='--',
+            label='1:1 agreement')
+    
+    # Set symlog scale on both axes
+    ax.set_xscale('symlog', linthresh=linthresh)
+    ax.set_yscale('symlog', linthresh=linthresh)
+    
+    # Set axis labels and title
+    ax.set_xlabel(xlabel, fontsize=labelsize, labelpad=labelpad)
+    ax.set_ylabel(ylabel, fontsize=labelsize, labelpad=labelpad)
+    # ax.set_title(title, fontsize=labelsize+2, fontweight='bold', labelpad=labelpad)
+    
+    
+    max_abs_mass = max(abs(np.min(delta_mass_sim)), 
+                        abs(np.max(delta_mass_sim)))
+
+    margin_mass = 0.2 * max_abs_mass
+
+    ax.set_ylim(-max_abs_mass , max_abs_mass+margin_mass )
+        
+    
+    # Add grid
+    ax.grid(lw=0.3,ls=':',which='major',axis='both')
+
+    # Add legend
+    ax.legend(fontsize=labelsize-2, frameon=True, facecolor='white', loc='upper left')
+    
+    # Adjust tick label size
+    ax.tick_params(axis='both', labelsize=labelsize-2)
+    
+    # Add a zero reference line for clarity
+    ax.axhline(0, color='k', linewidth=1, linestyle='-')
+    ax.axvline(0, color='k', linewidth=1, linestyle='-')
+    
+    plt.tight_layout()
+    plt.show()
+    
+
 
 def mass_time_variation(col_values_q,col_values_ssc,
                         sim_dict,dt,
@@ -2256,7 +2446,9 @@ def mass_classification(station_couple,
                                 input_dict_massVar_plot,
                                 debug)
    
-
+    debug and print('>> plot_mass_variation <<')
+    plot_event_budget(delta_mass_df,delta_mass_df_obs,
+                      input_dict_massVar_plot)
 
     # # mass variation during the event
     col_mass='delta_mass_[kg/sm]'
