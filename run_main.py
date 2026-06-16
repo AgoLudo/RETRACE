@@ -34,7 +34,7 @@ from main_input import (input_dict_FPCA,input_dict_massVar_plot,input_dict_emd)
 #                   MODULE 1: Extraction of the mass-transporting events
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# debug = False
+# debug = True
 # # perform segmentation on discharge Q
 # event_segmentation(input_dict,
 #                    input_dict_aux,
@@ -43,7 +43,7 @@ from main_input import (input_dict_FPCA,input_dict_massVar_plot,input_dict_emd)
 #                    path_output,
 #                    file_name_output,
 #                     debug=debug)
-# debug = False
+# debug = True
 # # perform segmentation on SSC hour
 # event_segmentation(input_dict_aux      , # <<< the aux becomes the main variable
 #                    input_dict          , # <<< the auxiliary variable is the discharge
@@ -121,22 +121,22 @@ MODE2: if single_station=False, then run for all the events
 #     main()
 
 # # ---------------- simulation mass uncertainty estimation ---------------------
-# debug=True
-# _=simulation_uncertainty(station_couple,
-#                        input_dict_q_1h,input_dict_ssc_10m,
-#                        input_sim_station_difference,
-#                        input_dict_plot_mass,
-#                        input_dict_FPCA,debug)
+debug=True
+_=simulation_uncertainty(station_couple,
+                       input_dict_q_1h,input_dict_ssc_10m,
+                       input_sim_station_difference,
+                       input_dict_plot_mass,
+                       input_dict_FPCA,debug)
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                         MODULE 5: Time differencing interpretation
 #                         MODULE 6: Energy-spectrum analysis
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-debug=True
-event_mass_analysis(station_couple,
-                    input_dict_q_1h,input_dict_ssc_10m, 
-                    input_sim_station_difference,
-                    input_dict_FPCA,
-                    input_dict_massVar_plot,
-                    input_dict_emd,
-                        debug)
+# debug=True
+# event_mass_analysis(station_couple,
+#                     input_dict_q_1h,input_dict_ssc_10m, 
+#                     input_sim_station_difference,
+#                     input_dict_FPCA,
+#                     input_dict_massVar_plot,
+#                     input_dict_emd,
+#                         debug)

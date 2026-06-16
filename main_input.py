@@ -9,11 +9,17 @@ from funct_var_analysis_main import (
     simulation_uncertainty,FPCA_regression_main,
     event_mass_analysis)
 
+station_couple={'upstream'  :'Arval_Amont',
+                'downstream':'Arvan_Aval'}
+
 station_couple={'upstream'  :'Pontamafrey',
                 'downstream':'Aiguebelle'}
 
-# reaches=['Arval_Amont:Arval_Amont','Arval_Amont:Arvan_Aval','Arvan_Aval:Pontamafrey',
-#              'Pontamafrey:Aiguebelle','Aiguebelle:Montmelian','Montmelian:Grenoble_campus']
+station_couple={'upstream'  :'Aiguebelle',
+                'downstream':'Montmelian'}
+
+station_couple={'upstream'  :'Montmelian',
+                'downstream':'Grenoble_campus'}
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                   MODULE 1: Extraction of the mass-transporting events
@@ -379,23 +385,22 @@ input_dict_FPCA={
 }
 
 input_dict_plot_mass = {
-    'figure_size': (10, 10),
-    'min_data_bins': 10, # min number of data points in the bin to be plotted
+    'figure_size': (10, 6),
     'marker_style': 'o',
-    'marker_color': 'navy',
+    'marker_color': 'dimgrey',
     'avg_line_color': 'red',
-    'error_color': 'grey',
-    'marker_edge_color': 'navy',
+    'marker_edge_color': 'dimgrey',
     'marker_size': 4,
     'error_line_width': 2.5,
-    'alpha':0.2,
+    'alpha':0.1,
     'x_label': r'$|M_{obs}|$',
-    'y_label': r'$|M_{sim}|$',
+    'y_label': r'$|M_{sim}|/|M_{obs}|-1$',
     'labelfont':16,
     'labelpad':10,
-    'title': 'Analytical model mass conservation',
+    'title': 'Residuals to Mass simulated',
     'grid': True,
-    'grid_line_width': 0.1
+    'grid_line_width': 0.1,
+    'threshold_mass_rel':0.1
     }
 
 
@@ -418,7 +423,7 @@ label_list={
     'delta_q':r'$\Delta\,Q\,$',
     'q_shear': r'$\tau$',
     'D_der_sec': r'${d\,D}/{d\,t}$',
-    'ssc_input':r'$\varphi$',
+    'ssc_input':r'$C$',
     'non_explained':r'comb.'
 }
 
@@ -440,10 +445,11 @@ input_dict_massVar_plot={
     'label_obs':r'$\Delta\,Mass\;[ton]$ observations',
     'linestyle_obs':' ',
     'markerstyle_obs':'.',
-    'markersize_obs':8,
+    'markersize_obs':20,
+    'bar_width':4,
     'label2':r'$\sum\,\Delta\,Mass\;[ton]$',
-    'labelsize':19,
-    'labelpad':17,
+    'labelsize':20,
+    'labelpad':20,
     'cum_linestyle':'--',
     'linthreshold_cum_mass':100, # tons under which there is uncertainty, the log plot will be linear
     # ------ mass budget plot -----
@@ -475,7 +481,7 @@ input_dict_massVar_plot={
     # ----------- monthly plot----------
     'list_season':list_season,
     'list_month':list_month,
-    'fontsize_month':18,
+    'fontsize_month':19,
     'color_month_fluxes':'k',
     'color_month_emer':'darkviolet',
     'ls_month_emer':'-',
