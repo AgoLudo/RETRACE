@@ -12,7 +12,7 @@ The analysis is structured into several distinct modules, which can be executed 
 
 ### Module 2: Estimation of the virtual velocity
 -   **File:** [`funct_reach_main.py`](funct_reach_main.py )
--   **Description:** This module, driven by the [`time_lag_analysis`](funct_reach_main.py ) function, calculates the time lag of Q and SSC signals between two stations for each identified event. It employs a cross-correlation method ([`cross_corr_events`](funct_reach.py )) enhanced with the Hilbert transform to accurately determine the lag, which is then used to compute the virtual celerities ($\lambda_Q$ and $\lambda_{\varphi}$).
+-   **Description:** This module, driven by the [`time_lag_analysis`](funct_reach_main.py ) function, calculates the time lag of Q and SSC signals between two stations for each identified event. It employs a cross-correlation method ([`cross_corr_events`](funct_reach.py )) enhanced with the Hilbert transform to accurately determine the lag, which is then used to compute the virtual celerities ($\lambda_Q$ and $\lambda_{C}$).
 
 ### Module 3: Fitting of a reach-averaged rating curve
 -   **File:** [`funct_reach_main.py`](funct_reach_main.py )
@@ -23,9 +23,11 @@ The analysis is structured into several distinct modules, which can be executed 
 -   **Description:** This module simulates the propagation of a flood wave or sediment pulse down the reach. The [`station_diff`](fuct_analytics_main.py ) function applies an advection-diffusion model ([`adv_diff_wave`](funct_analytics.py )) to route the upstream signal to the downstream location. It also includes functions to test the numerical solution against known analytical solutions ([`test_function`](fuct_analytics_main.py )).
 
 ### Module 5: Time differencing interpretation
+-   **File:** [`funct_var_analysis_main.py`](funct_var_analysis_main.py )
+-   **Description:** Investigates the sources of variability and error in sediment mass conservation. This module uses Functional Principal Component Analysis (FPCA) in [`FPCA_regression`](funct_var_analysis.py ) to classify events and identify controlling variables.
 ### Module 6: Energy-spectrum analysis
 -   **File:** [`funct_var_analysis_main.py`](funct_var_analysis_main.py )
--   **Description:** Investigates the sources of variability and error in sediment mass conservation. This module uses Functional Principal Component Analysis (FPCA) in [`FPCA_regression`](funct_var_analysis.py ) to classify events and identify controlling variables. Furthermore, [`emd_event`](funct_var_analysis.py ) performs an energy-spectrum analysis using the Hilbert-Huang Transform (HHT) to understand how signal power is distributed across different timescales.
+-   **Description:** Furthermore, from the previous Module, [`emd_event`](funct_var_analysis.py ) performs an energy-spectrum analysis using the Hilbert-Huang Transform (HHT) to understand how signal power is distributed across different timescales.
 
 ## Workspace Structure
 

@@ -103,7 +103,7 @@ def reach_morphometry(debug):
     # Slope
     
     geom_dict['Arval_Amont:Arval_Amont'    ]['slope']=np.nan
-    geom_dict['Arval_Amont:Arvan_Aval'     ]['slope']= 0.075
+    geom_dict['Arval_Amont:Arvan_Aval'     ]['slope']= 0.055
     geom_dict['Arvan_Aval:Pontamafrey'     ]['slope']= 0.014
     geom_dict['Pontamafrey:Aiguebelle'     ]['slope']= 0.006 # From Jaballah 2015 (majority of the reach)
     geom_dict['Aiguebelle:Montmelian'      ]['slope']=0.004

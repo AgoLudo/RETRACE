@@ -1005,8 +1005,8 @@ def mass_variation(col_values_q,col_values_ssc,dt,
         max_abs_mass = max(abs(delta_mass_df[col_mass].min()), 
                         abs(delta_mass_df[col_mass].max()))
 
-        margin_cum = 0.2 * max_abs_cum_mass  # 20% margin for better visualization
-        margin_mass = 0.2 * max_abs_mass
+        margin_cum = 0.3 * max_abs_cum_mass  # 30% margin for better visualization
+        margin_mass = 0.3 * max_abs_mass
 
         ax2.set_ylim(-max_abs_cum_mass, max_abs_cum_mass+ margin_cum )
         ax1.set_ylim(-max_abs_mass , max_abs_mass+margin_mass )
@@ -1363,10 +1363,10 @@ def plot_mass_time_month(input_dict_massVar_plot,
     ax1.set_ylabel(input_dict_massVar_plot['ylabel_emer_month'],
               fontsize=labelsize, labelpad=labelpad,color=color_emer)
     
-    ax2.set_title(input_dict_massVar_plot['title_month'],
-                     fontsize=fontsize,pad=labelpad*0.7)
-    ax1.set_title(input_dict_massVar_plot['title_month_emer'],
-                     fontsize=fontsize,pad=labelpad*0.7)
+    # ax2.set_title(input_dict_massVar_plot['title_month'],
+    #                  fontsize=fontsize,pad=labelpad*0.7)
+    # ax1.set_title(input_dict_massVar_plot['title_month_emer'],
+    #                  fontsize=fontsize,pad=labelpad*0.7)
        
     ax2.grid(True,lw=0.3,ls=':',which='both',axis='y')
     ax1.grid(True,lw=0.3,ls=':',which='major',axis='y')

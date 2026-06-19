@@ -108,8 +108,8 @@ MODE2: if single_station=False, then run for all the events
 # '''
 # for parallel computing with scheduler='processes'
 # def main():
-#     debug=True
-#     single_station=True # simulate just one event, to try and see results
+#     debug=False
+#     single_station=False # simulate just one event, to try and see results
 #     variable_test='ssc' # q,ssc
 #     station_diff(station_couple,
 #                 input_dict_q_1h,input_dict_ssc_1h,
@@ -121,22 +121,22 @@ MODE2: if single_station=False, then run for all the events
 #     main()
 
 # # ---------------- simulation mass uncertainty estimation ---------------------
-debug=True
-_=simulation_uncertainty(station_couple,
-                       input_dict_q_1h,input_dict_ssc_10m,
-                       input_sim_station_difference,
-                       input_dict_plot_mass,
-                       input_dict_FPCA,debug)
+# debug=False
+# _=simulation_uncertainty(station_couple,
+#                        input_dict_q_1h,input_dict_ssc_10m,
+#                        input_sim_station_difference,
+#                        input_dict_plot_mass,
+#                        input_dict_FPCA,debug)
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                         MODULE 5: Time differencing interpretation
 #                         MODULE 6: Energy-spectrum analysis
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# debug=True
-# event_mass_analysis(station_couple,
-#                     input_dict_q_1h,input_dict_ssc_10m, 
-#                     input_sim_station_difference,
-#                     input_dict_FPCA,
-#                     input_dict_massVar_plot,
-#                     input_dict_emd,
-#                         debug)
+debug=False
+event_mass_analysis(station_couple,
+                    input_dict_q_1h,input_dict_ssc_10m, 
+                    input_sim_station_difference,
+                    input_dict_FPCA,
+                    input_dict_massVar_plot,
+                    input_dict_emd,
+                        debug)

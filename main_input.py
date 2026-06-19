@@ -12,14 +12,14 @@ from funct_var_analysis_main import (
 station_couple={'upstream'  :'Arval_Amont',
                 'downstream':'Arvan_Aval'}
 
-station_couple={'upstream'  :'Pontamafrey',
-                'downstream':'Aiguebelle'}
+# station_couple={'upstream'  :'Pontamafrey',
+#                 'downstream':'Aiguebelle'}
 
-station_couple={'upstream'  :'Aiguebelle',
-                'downstream':'Montmelian'}
+# station_couple={'upstream'  :'Aiguebelle',
+#                 'downstream':'Montmelian'}
 
-station_couple={'upstream'  :'Montmelian',
-                'downstream':'Grenoble_campus'}
+# station_couple={'upstream'  :'Montmelian',
+#                 'downstream':'Grenoble_campus'}
 
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                   MODULE 1: Extraction of the mass-transporting events
@@ -436,7 +436,7 @@ input_dict_massVar_plot={
     'deposition_color':'blue',
     'erosion_color_obs':'firebrick',
     'deposition_color_obs':'navy',
-    'figsize':(15,7),
+    'figsize':(13,8),
     'title':'Reach scale - event based mass variation',
     'xlabel':'Time [year]',
     'ylabel':r'$\Delta\,Mass\;[ton]$',
@@ -449,18 +449,18 @@ input_dict_massVar_plot={
     'bar_width':4,
     'label2':r'$\sum\,\Delta\,Mass\;[ton]$',
     'labelsize':20,
-    'labelpad':20,
+    'labelpad':18,
     'cum_linestyle':'--',
     'linthreshold_cum_mass':100, # tons under which there is uncertainty, the log plot will be linear
     # ------ mass budget plot -----
-    'figsize_budget':(8, 7),
+    'figsize_budget':(8, 8),
     'title_budget': r'Event Mass Budget',
     'xlabel_budget': r'$\Delta\,Mass_{obs}\;[ton]$',
     'ylabel_budget': r'$\Delta\,Mass_{sim}\;[ton]$',
     'markersize_budget':50,
     'mixed_coloring_budget':'dimgray',
-    'labelsize_budget':18,
-    'labelpad_budget':15,
+    'labelsize_budget':20,
+    'labelpad_budget':18,
     'linewidth_budget':1.5,
     # ------ ratio plot -----
     'figsize_ratio':(10, 6),
@@ -532,7 +532,7 @@ target_color_dict={
           'delta_mass':mpl.cm.plasma
 }
 input_dict_emd={
-    'EMD_calculate':False, # if true calculate, if false, then it loads it from the folder
+    'EMD_calculate':False, # >>> if true calculate, if false, then it loads it from the folder
     'target_columns':['delta_ssc','delta_q','delta_mass'],
     'target_colors':target_color_dict,
     # emd decomposition
