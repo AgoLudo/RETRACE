@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/1073848148.svg)](https://doi.org/10.5281/zenodo.20760539)
 # RETRACE: Routing & Event Time-differencing for Response Analysis of mass Changing Events
 
 This repository contains a Python-based framework for analyzing hydrological and sediment transport dynamics between two monitoring stations. The codebase, named RETRACE, processes time-series data of discharge (Q) and suspended sediment concentration (SSC) to characterize event-based transport phenomena between upstream and downstream monitoring stations.
