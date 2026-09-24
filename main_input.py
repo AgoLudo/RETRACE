@@ -9,11 +9,11 @@ from funct_var_analysis_main import (
     simulation_uncertainty,FPCA_regression_main,
     event_mass_analysis)
 
-station_couple={'upstream'  :'Arval_Amont',
-                'downstream':'Arvan_Aval'}
+# station_couple={'upstream'  :'Arval_Amont',
+#                 'downstream':'Arvan_Aval'}
 
-# station_couple={'upstream'  :'Pontamafrey',
-#                 'downstream':'Aiguebelle'}
+station_couple={'upstream'  :'Pontamafrey',
+                'downstream':'Aiguebelle'}
 
 # station_couple={'upstream'  :'Aiguebelle',
 #                 'downstream':'Montmelian'}
@@ -26,7 +26,7 @@ station_couple={'upstream'  :'Arval_Amont',
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # DISCHARGE input dictionary
 input_dict={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_1h',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_1h',
     'file_name_in': 'Q_'+station_couple['upstream']+'_1h.txt',
     'station_name': station_couple['upstream'],
     'col_values': 'Valeur_[m3/s]', # column name : VALUES
@@ -36,7 +36,7 @@ input_dict={
 
 # TRACER input dictionary
 input_dict_aux={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_1h',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_1h',
     'file_name_in': 'SSC_'+station_couple['upstream']+'_1h.txt',
     'station_name': station_couple['upstream'],
     'col_values': 'Valeur_[mg/L]',
@@ -63,17 +63,17 @@ event_param_dict={
 }
 
 # where to save the events
-path_output=r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData'
+path_output=r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData'
 file_name_output    =(input_dict['station_name']+r'_q_data_events.pkl'  )
 file_name_output_aux=(input_dict['station_name']+r'_ssc_data_events.pkl')
 
 
 input_events_ssc_1h={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData',
     'file_name_in':(input_dict['station_name']+r'_ssc_data_events.pkl')}
 
 input_hour2_10min_input={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_10min',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_10min',
     'file_name_in':('SSC_'+ input_dict['station_name']+'_10m.txt'),
     'col_values': 'Valeur_[mg/L]',
     'time_values':'DateHeure',
@@ -82,7 +82,7 @@ input_hour2_10min_input={
     'input_dict_ssc1h':input_events_ssc_1h,
     'timedelta_err':timedelta(hours=1),
     # saving
-    'path_output':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\SSC_10min',
+    'path_output':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\SSC_10min',
     'file_name_out':(input_dict['station_name']+r'_ssc_data_events_10m.pkl')
     }
 
@@ -111,7 +111,7 @@ input_ampfreq_plot={
 
 
 input_dict_q_1h={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_1h',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_1h',
     'upstream_station': station_couple['upstream'],
     'downstream_station': station_couple['downstream'],
     'file_name_upstream': ('Q_'+station_couple['upstream']+'_1h.txt'),
@@ -125,7 +125,7 @@ input_dict_q_1h={
     'polyorder':1}
 
 input_dict_ssc_1h={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_1h',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_1h',
     'upstream_station': station_couple['upstream'],
     'downstream_station': station_couple['downstream'],
     'file_name_upstream': ('SSC_'+station_couple['upstream']+'_1h.txt'),
@@ -139,7 +139,7 @@ input_dict_ssc_1h={
     'polyorder':1}
 
 input_dict_ssc_10m={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_10min',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\Code_sedAnalysis\data_10min',
     'upstream_station': station_couple['upstream'],
     'downstream_station': station_couple['downstream'],
     'file_name_upstream': ('SSC_'+station_couple['upstream']+'_10m.txt'),
@@ -153,12 +153,12 @@ input_dict_ssc_10m={
     'polyorder':1}
 
 input_events_q={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData',
     'station': station_couple['upstream'],
     'file_name_in': (station_couple['upstream']+r'_q_data_events.pkl')}
 
 input_events_ssc={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\SSC_10min',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\SSC_10min',
     'station': station_couple['upstream'],
     'file_name_in': (station_couple['upstream']+'_ssc_data_events_10m.pkl')}
 
@@ -187,14 +187,14 @@ crosscorr_input_dict_ssc={
 # merge the events into unique list
 merge_save_input_dict={
     'tr_time_overlap':timedelta(hours=12), # max N of hours overlap between events to be crossed out
-    'path_output':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\time_lags',
+    'path_output':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\time_lags',
     'file_name_out':('lags_df_'+station_couple['upstream']+'_'+station_couple['downstream']+r'.pkl')}
 
 lag2cel_input_dict={
     'upper_quantile':0.99, # eliminate extreme measures
     'tr_velocity_upper_q':7, # m/s  upper thresholds of celerities
     'tr_velocity_upper_ssc':6, # m/s
-    'path_output':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\time_lags',
+    'path_output':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\time_lags',
     'file_name_out':('cels_df_'+station_couple['upstream']+'_'+station_couple['downstream']+r'.pkl')}
 
 # properties to plot the celerity Q ans SSC
@@ -215,12 +215,12 @@ plot_celerities_features={
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 input_cel_df={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\time_lags',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\time_lags',
     'file_name_in':('cels_df_'+station_couple['upstream']+'_'+station_couple['downstream']+r'.pkl'),
 }
 
 input_lag_df={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\time_lags',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\time_lags',
     'file_name_in':('lags_df_'+station_couple['upstream']+'_'+station_couple['downstream']+'.pkl'),
 }
 
@@ -248,7 +248,7 @@ qDu_plot_input_dict={
     'fontsize':13,
     'ylim':[0.09,1.1],
     'xlim':[0.09,1.1],
-    'path_output':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\reach_hydro',
+    'path_output':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\reach_hydro',
     'file_name_out':('qU_fit_'+station_couple['upstream']+'_'+station_couple['downstream']+'_df_.pkl'),
     # ---- plot 2 -------------
     # var list [q,U,D,dqdD,delay,dQdt,dQdt_max,'init_event',
@@ -271,7 +271,7 @@ reckin_input_dict={
 
 
 diffusion_input_dict={
-    'path_output':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\reach_hydro',
+    'path_output':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\reach_hydro',
     'file_name_out':('reach_hydro_'+station_couple['upstream']+'_'+station_couple['downstream']+r'_df.pkl')
 }
 
@@ -342,7 +342,7 @@ input_sim_ssc_test={
 }
 
 input_sim_station_difference={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\reach_hydro',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\reach_hydro',
     'file_name_in':('reach_hydro_'+station_couple['upstream']+'_'+station_couple['downstream']+r'_df.pkl'),
     'diffusion_method_ssc':'Iwasa_Aya',# Iwasa_Aya/Fisher/Elder/Liu/Seo_Cheong/Koussis
     'Pe_threshold':2200,
@@ -353,7 +353,7 @@ input_sim_station_difference={
 
 input_sim_diff_merge_save={
     'col_time':input_dict_q_1h['time_values'],
-    'path_output':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\simulation',
+    'path_output':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\simulation',
     'file_name_out':('simulation_'+station_couple['upstream']+'_'+station_couple['downstream']+'_df.pkl')
 }
 
@@ -370,8 +370,8 @@ columns_FPCA=['delta_q',
              'target']
 
 input_dict_FPCA={
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\simulation',
-    'path_output':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\FPCA_analysis',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\simulation',
+    'path_output':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\FPCA_analysis',
     'file_name_in':('simulation_'+station_couple['upstream']+'_'+station_couple['downstream']+'_df.pkl'),
     'file_name_out':('FPCA_'+station_couple['upstream']+'_'+station_couple['downstream']+'_df.pkl'),
     'col_values_q':input_dict_q_1h['col_values'],
@@ -446,11 +446,12 @@ input_dict_massVar_plot={
     'linestyle_obs':' ',
     'markerstyle_obs':'.',
     'markersize_obs':20,
-    'bar_width':4,
+    'bar_width':3,
     'label2':r'$\sum\,\Delta\,Mass\;[ton]$',
     'labelsize':20,
     'labelpad':18,
-    'cum_linestyle':'--',
+    'cum_linestyle':':',
+    'cum_linewidth':3,
     'linthreshold_cum_mass':100, # tons under which there is uncertainty, the log plot will be linear
     # ------ mass budget plot -----
     'figsize_budget':(8, 8),
@@ -550,8 +551,8 @@ input_dict_emd={
     'scale_grid':'log',
     'min_resolution_sec':min_resolution,
     'amplitude_share_threshold':0.1, # 10% of the total power (excluding trend)
-    'path_output':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\HHT_analysis',
-    'path_input':r'C:\Users\Agostini\OneDrive - ETH Zurich\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\HHT_analysis',
+    'path_output':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\HHT_analysis',
+    'path_input':r'Z:\Ludovico\ssc_first\Data_Analysis\Suspended_Sediments\Isere_Topkapi_calibration\code\HydroData\HHT_analysis',
     'file_name_in':('hht_'+station_couple['upstream']+'_'+station_couple['downstream']+'_df.pkl'),
     'file_name_out':('hht_'+station_couple['upstream']+'_'+station_couple['downstream']+'_df.pkl'),
     # histogram analysis and signal power share
