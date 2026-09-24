@@ -27,13 +27,14 @@ def time_lag_analysis(station_couple,
     
     # -------------------------------------------------------------------------------
     #  import data 
+    debug and print('>> import_data_stationCouple *main* <<')
     q_dict_data         =import_data_stationCouple(input_dict_q_1h     ,debug )
     ssc_dict_data       =import_data_stationCouple(input_dict_ssc_1h   ,debug )
     ssc_dict_data_10min =import_data_stationCouple(input_dict_ssc_10min,debug )
     
    
     # import events 
-
+    debug and print('>> import_df *main* <<')
     event_dict_q  =import_df(input_events_q,debug ) # hourly
     event_dict_ssc=import_df(input_events_ssc,debug) # 10 minutes
     

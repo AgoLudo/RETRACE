@@ -23,6 +23,8 @@ from matplotlib.ticker import LogLocator, FixedLocator,FuncFormatter
 from scipy.stats import gaussian_kde
 import matplotlib.lines as mlines
 
+plt.rcParams['mathtext.default'] = 'regular'
+
 from funct_reach import import_df, save_df
 
 # ---------------------- side plot functions ---------------------------------
@@ -959,6 +961,7 @@ def mass_variation(col_values_q,col_values_ssc,dt,
         label_cum            = input_dict_massVar_plot['label2'              ]
         labelsize            = input_dict_massVar_plot['labelsize'           ]
         cum_linestyle        = input_dict_massVar_plot['cum_linestyle'       ]
+        cum_linewidth        = input_dict_massVar_plot['cum_linewidth'       ]
         labelpad        = input_dict_massVar_plot['labelpad'       ]
         bar_width        = input_dict_massVar_plot['bar_width'       ]
 
@@ -971,7 +974,7 @@ def mass_variation(col_values_q,col_values_ssc,dt,
                   for val in delta_mass_df_obs[col_mass]]
         
         ax1.bar(delta_mass_df.index, delta_mass_df[col_mass],
-                color=colors, label=label_sim,width=bar_width,alpha=0.75)
+                color=colors, label=label_sim,width=bar_width)
         
         ax1.scatter(delta_mass_df.index, delta_mass_df_obs[col_mass],
                 marker=markerstyle_obs,s=markersize_obs,
@@ -982,23 +985,27 @@ def mass_variation(col_values_q,col_values_ssc,dt,
         for i in range(len(delta_mass_df) - 1):
             
             if i==0:
+                # obs
+                ax2.plot(delta_mass_df_obs.index[i:i+2], delta_mass_df_obs[col_mass_cum][i:i+2],
+                                        color=deposition_color_obs if delta_mass_df_obs[col_mass_cum].iloc[i] < 0 else erosion_color_obs,
+                                        linestyle=cum_linestyle,label=(label_cum+' observations'),linewidth=cum_linewidth)
+                                
                 # sim
                 ax2.plot(delta_mass_df.index[i:i+2], delta_mass_df[col_mass_cum][i:i+2],
                         color=deposition_color if delta_mass_df[col_mass_cum].iloc[i] < 0 else erosion_color,
-                        linestyle=cum_linestyle,label=label_cum)
-                # obs
-                ax2.plot(delta_mass_df_obs.index[i:i+2], delta_mass_df_obs[col_mass_cum][i:i+2],
-                        color=deposition_color_obs if delta_mass_df_obs[col_mass_cum].iloc[i] < 0 else erosion_color_obs,
-                        linestyle=cum_linestyle)
+                        linestyle=cum_linestyle,label=(label_cum+' simulation'),linewidth=cum_linewidth)
+                
             else:
+                # obs
+                ax2.plot(delta_mass_df_obs.index[i:i+2], delta_mass_df_obs[col_mass_cum][i:i+2],
+                                        color=deposition_color_obs if delta_mass_df_obs[col_mass_cum].iloc[i] < 0 else erosion_color_obs,
+                                        linestyle=cum_linestyle,linewidth=cum_linewidth)
+                                
                 # sim
                 ax2.plot(delta_mass_df.index[i:i+2], delta_mass_df[col_mass_cum][i:i+2],
                         color=deposition_color if delta_mass_df[col_mass_cum].iloc[i] < 0 else erosion_color,
-                        linestyle=cum_linestyle)
-                # obs
-                ax2.plot(delta_mass_df_obs.index[i:i+2], delta_mass_df_obs[col_mass_cum][i:i+2],
-                        color=deposition_color_obs if delta_mass_df_obs[col_mass_cum].iloc[i] < 0 else erosion_color_obs,
-                        linestyle=cum_linestyle)
+                        linestyle=cum_linestyle,linewidth=cum_linewidth)
+                
             
         max_abs_cum_mass = max(abs(delta_mass_df[col_mass_cum].min()), 
                             abs(delta_mass_df[col_mass_cum].max()))
@@ -1033,7 +1040,7 @@ def mass_variation(col_values_q,col_values_ssc,dt,
         lines=lines1+lines2
         labels=labels1+labels2
         ax1.legend(lines, labels, loc='lower right',
-                   frameon=True, facecolor='white',fontsize=labelsize*0.95)
+                   frameon=True, facecolor='white',fontsize=labelsize*0.95, ncols=2)
         ax1.tick_params(axis='both', labelsize=labelsize*0.95)
         ax2.tick_params(axis='y', labelsize=labelsize*0.95)
 
