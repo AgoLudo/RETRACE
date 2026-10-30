@@ -11,6 +11,10 @@ import matplotlib.dates as mdates
 
 from dask import delayed, compute
 from dask.diagnostics import ProgressBar
+import matplotlib as mpl
+mpl.rcParams['savefig.dpi'] = 450
+plt.rcParams['mathtext.default'] = 'regular'
+
 
 from funct_reach import (data_prep,save_df)
 
@@ -852,16 +856,25 @@ def simulation_event(col_values,col_time,
     return result_df
 
 
-def merge_event_results(df_q,df_ssc,debug):
-    # check that the simulations went well
+# def merge_event_results(df_q,df_ssc,debug):
+#     # check that the simulations went well
+#     if df_q is None or df_ssc is None:
+#         debug and print("One of the inputs is None.")
+#         return pd.DataFrame()
+    
+#     merged_df = df_q.join(df_ssc,
+#                           how='inner', 
+#                           lsuffix='_q', rsuffix='_ssc')
+#     return merged_df
+
+def merge_event_results(df_q, df_ssc, debug):
     if df_q is None or df_ssc is None:
         debug and print("One of the inputs is None.")
         return pd.DataFrame()
-    
-    merged_df = df_q.join(df_ssc,
-                          how='inner', 
-                          lsuffix='_q', rsuffix='_ssc')
-    return merged_df
+
+    merged_df = df_q.join(df_ssc, how='inner', lsuffix='_q', rsuffix='_ssc')
+    return merged_df.apply(pd.to_numeric, errors='coerce').astype('float64')
+
 
 def save_sim(result_dict,
                input_sim_diff_merge_save,

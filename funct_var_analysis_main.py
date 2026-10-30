@@ -48,18 +48,18 @@ def simulation_uncertainty(station_couple,
     return delta_vars_dict
 # ---------------------------------------------------------
     
-def FPCA_regression_main(input_dict_PCA,
+def FPCA_regression_main(input_dict_FPCA,
                              debug):
             # import simulation data
-        sim_dict =import_df(input_dict_PCA      ,debug )
+        sim_dict =import_df(input_dict_FPCA      ,debug )
         # 
         event_variable_df,_=FPCA_regression(sim_dict,
-                                   input_dict_PCA,
+                                   input_dict_FPCA,
                                     debug)
         
         FPCA_Non_explained_plot(event_variable_df)
         FPCA_variables_classification(event_variable_df,
-                                             input_dict_PCA,
+                                             input_dict_FPCA,
                                              debug)
 
 def event_mass_analysis(station_couple,

@@ -24,6 +24,8 @@ from scipy.stats import gaussian_kde
 import matplotlib.lines as mlines
 
 plt.rcParams['mathtext.default'] = 'regular'
+import matplotlib as mpl
+mpl.rcParams['savefig.dpi'] = 600
 
 from funct_reach import import_df, save_df
 
@@ -937,8 +939,8 @@ def mass_variation(col_values_q,col_values_ssc,dt,
     delta_mass_df_obs.loc[:,col_mass_cum]=np.nancumsum(
         delta_mass_df_obs.loc[:,col_mass].values)
     
-    debug and print('\ndelta mass sim [ton]: ',delta_mass_df[col_mass_cum][-1],
-                    '\ndelta mass obs [ton]: ',delta_mass_df_obs[col_mass_cum][-1],
+    debug and print('\ndelta mass sim [ton]: ',delta_mass_df[col_mass_cum].iloc[-1],
+                    '\ndelta mass obs [ton]: ',delta_mass_df_obs[col_mass_cum].iloc[-1],
                     '\nperiod of the events: ',delta_mass_df.index[-1]-delta_mass_df.index[0])
     # ------------------------------------------
     # ------------    PLOT   -------------------

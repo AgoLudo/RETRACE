@@ -6,6 +6,9 @@ from scipy.signal import savgol_filter,find_peaks
 import emd
 import plotly.graph_objects as go
 import pickle
+import matplotlib as mpl
+mpl.rcParams['savefig.dpi'] = 450
+plt.rcParams['mathtext.default'] = 'regular'
 
 # --------------------- IMPORT DATA ---------------------
 def import_data(input_dict):

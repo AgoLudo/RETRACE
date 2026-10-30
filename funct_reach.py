@@ -9,6 +9,9 @@ from scipy.signal import savgol_filter,hilbert,correlate,correlation_lags,find_p
 import matplotlib.colors as mcolors
 from scipy.stats import linregress
 from scipy.optimize import minimize_scalar
+import matplotlib as mpl
+mpl.rcParams['savefig.dpi'] = 450
+plt.rcParams['mathtext.default'] = 'regular'
 
 # 1. ---------------------- DATA IMPORT ---------------------------------
 def import_df(input_dataframe,debug):
